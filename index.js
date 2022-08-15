@@ -1,9 +1,9 @@
-const http = require('http')
+const http =  require('http')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')//logged
 
-const Route = express.Router()
+const Router  = express.Router()
 
 const PORT = process.env.PORT || 4000
 const server = http.createServer(app)
@@ -12,32 +12,37 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 //1.Application-level middleware
-app.use((req,res,next)=>{
-    console.log("Time:",Date(Date.now()))
-    next()
-})
+// app.use((req,res,next)=>{
+//     console.log('Time:',Date(Date.now()))
+//     next()
+// })
 
 //2.Router - level middleware
-Route.use((req,res,next)=>{
+Router.use((req,res,next)=>{
     console.log('This is a Router middleware')
     next()
 })
 
-//Mount the router
+//Mount the Router
 app.use('/',Router)
 
-app.get('/',(req,res,next)=>{
-    res.send("Home")
-    next()
+app.get('/home',(req,res,)=>{
+    //res.send("Home")
+    res.json({
+        message:true,
+        app:"express-Routes",
+    })
 })
 
 //register route
-//Get:http://localhost:4000
-app.get('/',(req,res)=>{
-    res.status(200).send({message:"Home page"})
+//GET:http://localhost:4000
+app.get('/profile',(req,res,next)=>{
+    console.log("profile")
+    res.send("profile")
+    next()
 })
 
-app.get('/contact',myLogger,(req,res)=>{
+app.get('/contact',(req,res)=>{
     res.status(200).json({
         message:"Contact page"
     })
@@ -45,7 +50,7 @@ app.get('/contact',myLogger,(req,res)=>{
 
 //http://localhost:4000/user/10
 app.get('/user/:id([a-d,0-3,w-z]{4})',(req,res)=>{
-    res.status(200).send(`ID is:`+ res.params.id)
+    res.status(200).send(`ID is:`+ req.params.id)
 })
 
 //http://localhost:4000/user/mark/1
@@ -62,6 +67,6 @@ app.get('/student/:name/:id',(req,res)=>{
 })
 
 //http://localhost:4000
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log(`Server running at http://localhost:${PORT}`)
 })
